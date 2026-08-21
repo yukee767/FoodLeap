@@ -1,0 +1,120 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-foodleap}
+      POSTGRES_USER: ${POSTGRES_USER:-foodleap}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-foodleap} -d ${POSTGRES_DB:-foodleap}"]
+      interval: 10s
+      retries: 5
+    networks: [foodleap]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy volatile-lru
+    expose:
+      - "6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 5
+    networks: [foodleap]
+    restart: unless-stopped
+
+  api-main:
+    image: ghcr.io/yukee767/foodleap/api-main:${TAG:-latest}
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-foodleap}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-foodleap}
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: ${JWT_SECRET:?required}
+      PORT: 3001
+    expose:
+      - "3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/api/health"]
+      interval: 10s
+      retries: 3
+    networks: [foodleap]
+    restart: unless-stopped
+
+  search-service:
+    image: ghcr.io/yukee767/foodleap/search-service:${TAG:-latest}
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-foodleap}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-foodleap}
+      REDIS_URL: redis://redis:6379/0
+      PORT: 3002
+    expose:
+      - "3002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3002/api/search/health"]
+      interval: 10s
+      retries: 3
+    networks: [foodleap]
+    restart: unless-stopped
+
+  admin-api:
+    image: ghcr.io/yukee767/foodleap/admin-api:${TAG:-latest}
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-foodleap}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-foodleap}
+      REDIS_URL: redis://redis:6379/1
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:?required}
+    expose:
+      - "8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8000/health"]
+      interval: 10s
+      retries: 3
+    networks: [foodleap]
+    restart: unless-stopped
+
+  web:
+    image: ghcr.io/yukee767/foodleap/web:${TAG:-latest}
+    ports:
+      - "3000:3000"
+    environment:
+      API_MAIN_URL: http://api-main:3001
+      SEARCH_SERVICE_URL: http://search-service:3002
+      ADMIN_API_URL: http://admin-api:8000
+    depends_on:
+      api-main:
+        condition: service_healthy
+      search-service:
+        condition: service_healthy
+    networks: [foodleap]
+    restart: unless-stopped
+
+networks:
+  foodleap:
+    driver: bridge
+
+volumes:
+  pgdata:
+  redisdata:

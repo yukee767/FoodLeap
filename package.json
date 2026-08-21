@@ -1,0 +1,24 @@
+{
+  "name": "foodleap",
+  "private": true,
+  "version": "0.1.0",
+  "description": "FoodLeap - Receitas personalizadas e dieta integrada",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:api": "npm run dev --workspace=apps/api-main",
+    "dev:search": "npm run dev --workspace=apps/search-service",
+    "dev:admin": "uvicorn main:app --reload --app-dir apps/admin-api",
+    "dev:all": "docker-compose -f infra/docker-compose.yml up -d && npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}
