@@ -7,9 +7,9 @@ import { cn } from '@/lib/utils';
 
 const TABS = [
   { href: '/', label: 'Início', icon: Home },
-  { href: '/busca', label: 'Buscar', icon: Search },
+  { href: '/receitas', label: 'Buscar', icon: Search },
   { href: '/dieta', label: 'Dieta', icon: ClipboardList },
-  { href: '/perfil', label: 'Perfil', icon: User },
+  { href: '/ocasioes', label: 'Ocasiões', icon: User },
 ];
 
 export function BottomNav() {

@@ -34,12 +34,12 @@ export function Footer() {
           <h5 className="text-sm font-medium">Produto</h5>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li>
-              <Link href="/planos" className="hover:text-foreground">
+              <Link href="/dieta" className="hover:text-foreground">
                 Planos
               </Link>
             </li>
             <li>
-              <Link href="/sobre" className="hover:text-foreground">
+              <Link href="/" className="hover:text-foreground">
                 Sobre
               </Link>
             </li>

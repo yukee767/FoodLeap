@@ -5,7 +5,7 @@ import { api, queryKeys } from '@/lib/api-client';
 
 export function useRecipes(filters: Record<string, string | undefined>) {
   const clean = Object.fromEntries(Object.entries(filters).filter(([, v]) => !!v));
-  return useQuery({
+  return useQuery<any>({
     queryKey: queryKeys.recipes.list(clean),
     queryFn: () => api.get('/recipes', { params: clean }).then((r) => r.data),
     staleTime: 5 * 60 * 1000,

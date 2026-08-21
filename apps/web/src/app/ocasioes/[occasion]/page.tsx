@@ -8,14 +8,16 @@ export function generateStaticParams() {
   return OCCASIONS.map((o) => ({ occasion: o.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { occasion: string } }): Promise<Metadata> {
-  const occ = getOccasion(params.occasion);
+export async function generateMetadata({ params }: { params: Promise<{ occasion: string }> }): Promise<Metadata> {
+  const { occasion } = await params;
+  const occ = getOccasion(occasion);
   if (!occ) return {};
   return { title: `${occ.titulo} | FoodLeap`, description: occ.descricao };
 }
 
-export default function OccasionDetailPage({ params }: { params: { occasion: string } }) {
-  const occ = getOccasion(params.occasion);
+export default async function OccasionDetailPage({ params }: { params: Promise<{ occasion: string }> }) {
+  const { occasion } = await params;
+  const occ = getOccasion(occasion);
   if (!occ) notFound();
 
   return (

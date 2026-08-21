@@ -12,19 +12,21 @@ async function fetchRecipe(slug: string) {
   return res.json();
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const recipe = await fetchRecipe(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const recipe = await fetchRecipe(slug);
   if (!recipe) return { title: 'Receita não encontrada' };
   return {
     title: `${recipe.title} | FoodLeap`,
     description: recipe.description?.slice(0, 155),
-    alternates: { canonical: `/receitas/${recipe.slug ?? params.slug}` },
+    alternates: { canonical: `/receitas/${recipe.slug ?? slug}` },
     openGraph: { images: recipe.cover_url ? [recipe.cover_url] : undefined, type: 'article' },
   };
 }
 
-export default async function ReceitaDetailPage({ params }: { params: { slug: string } }) {
-  const recipe = await fetchRecipe(params.slug);
+export default async function ReceitaDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const recipe = await fetchRecipe(slug);
   if (!recipe) notFound();
 
   const jlRecipe = jsonLdRecipe(recipe);
@@ -43,7 +45,7 @@ export default async function ReceitaDetailPage({ params }: { params: { slug: st
         <Badge variant="outline">{recipe.protein_main}</Badge>
       </div>
       <div className="prose mt-8 max-w-none">
-        <p className="text-sm text-muted-foreground">Instruções e ingredientes virão do backend (cache_used:recipe:{id} TTL 1h).</p>
+        <p className="text-sm text-muted-foreground">Instruções e ingredientes virão do backend (cache_used:recipe:{"{id}"} TTL 1h).</p>
       </div>
     </div>
   );

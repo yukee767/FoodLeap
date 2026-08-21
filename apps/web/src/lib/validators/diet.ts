@@ -1,23 +1,23 @@
 import { DietAnswersSchema } from '@foodleap/shared-types';
 import { z } from 'zod';
 
-// Schemas por step para validação incremental RHF
+// Schemas por step para validação incremental RHF - não usa pick devido superRefine (ZodEffects)
 export const dietStepSchemas: Record<number, z.ZodTypeAny> = {
-  1: DietAnswersSchema.pick({ goal: true }),
-  2: DietAnswersSchema.pick({ activity_level: true }),
-  3: DietAnswersSchema.pick({ restrictions: true }),
-  4: DietAnswersSchema.pick({ health_conditions: true }),
-  5: DietAnswersSchema.pick({ skill_level: true }),
-  6: DietAnswersSchema.pick({ routine_weekday: true }),
-  7: DietAnswersSchema.pick({ routine_weekend: true }),
-  8: DietAnswersSchema.pick({ time_available: true }),
-  9: DietAnswersSchema.pick({ cook_frequency: true }),
-  10: DietAnswersSchema.pick({ budget: true }),
-  11: DietAnswersSchema.pick({ favorite_protein: true }),
-  12: DietAnswersSchema.pick({ carbs: true }),
-  13: DietAnswersSchema.pick({ hated_ingredients: true }),
-  14: DietAnswersSchema.pick({ flavor: true }),
-  15: DietAnswersSchema.pick({ hardest_meal: true }),
+  1: z.object({ goal: z.enum(['emagrecer','ganhar_massa','manter_saudavel','energia','aprender_cozinhar']) }),
+  2: z.object({ activity_level: z.enum(['sedentario','leve','moderado','intenso']) }),
+  3: z.object({ restrictions: z.array(z.enum(['nenhuma','vegetariano','vegano','sem_lactose','sem_gluten','low_carb','alergia'])).min(1) }),
+  4: z.object({ health_conditions: z.array(z.enum(['nenhuma','diabetes','hipertensao','colesterol_alto','intestino_sensivel','sop'])).optional().default([]) }),
+  5: z.object({ skill_level: z.enum(['iniciante','intermediario','avancado']) }),
+  6: z.object({ routine_weekday: z.enum(['correria','hibrido','home','irregular']) }),
+  7: z.object({ routine_weekend: z.enum(['praticidade','mais_tempo','receber','como_fora']) }),
+  8: z.object({ time_available: z.enum(['15min','30min','45min','60min']) }),
+  9: z.object({ cook_frequency: z.enum(['todo_dia','2_3x','1x','decidir_semana']) }),
+  10: z.object({ budget: z.enum(['economico','medio','confortavel','tanto_faz']).optional() }),
+  11: z.object({ favorite_protein: z.array(z.enum(['frango','carne','porco','peixe_branco','salmao_atum','ovo','grao_lentilha','tofu_soja'])).min(1).max(3) }),
+  12: z.object({ carbs: z.array(z.enum(['arroz','macarrao','pao_tapioca','batata_mandioca','cuscuz','quinoa_aveia','evito_carb_noite'])).min(1) }),
+  13: z.object({ hated_ingredients: z.array(z.enum(['coentro','pimentao','cebola','berinjela','cogumelos','figado','outro'])).optional().default([]) }),
+  14: z.object({ flavor: z.enum(['caseirinho','picante','agridoce','mediterraneo','cremoso']).optional() }),
+  15: z.object({ hardest_meal: z.enum(['cafe','almoco','jantar','lanches','todas']) }),
 };
 
 export function validateStep(step: number, answers: Record<string, unknown>) {

@@ -26,7 +26,7 @@ export function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <Link href="/busca" aria-label="Buscar">
+          <Link href="/receitas" aria-label="Buscar">
             <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
             </Button>

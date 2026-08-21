@@ -57,9 +57,9 @@ export const useDietWizardStore = create<DietWizardState>()(
         const key = keyMap[currentStep];
         const optional = [4, 10, 13, 14].includes(currentStep);
         if (optional) return true;
-        const v = answers[key];
-        if (Array.isArray(v)) return v.length > 0;
-        return v !== undefined && v !== null && v !== '';
+        const v = answers[key] as unknown;
+        if (Array.isArray(v)) return (v as unknown[]).length > 0;
+        return v !== undefined && v !== null && (v as string) !== '';
       },
       progress: () => Math.round((get().currentStep / 15) * 100),
     }),
