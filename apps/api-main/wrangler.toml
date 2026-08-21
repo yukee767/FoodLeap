@@ -1,0 +1,12 @@
+name = "foodleap-api"
+main = "src/worker.ts"
+compatibility_date = "2025-08-21"
+compatibility_flags = ["nodejs_compat"]
+
+[observability.logs]
+enabled = true
+
+[vars]
+NODE_ENV = "production"
+# Mock mode - sem DB real no Worker (Hyperdrive configurável depois)
+MOCK_DB = "true"

@@ -1,0 +1,7 @@
+name = "foodleap-search"
+main = "src/worker.ts"
+compatibility_date = "2025-08-21"
+compatibility_flags = ["nodejs_compat"]
+
+[observability.logs]
+enabled = true
