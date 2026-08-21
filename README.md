@@ -71,20 +71,36 @@ Prod: `docker compose -f infra/docker-compose.prod.yml up -d` (imagens GHCR) ou 
 ## API
 
 - `GET /api/diet/questions` — 15 perguntas
-- `POST /api/diet/profile` — `{userId, answers}` → 201 + invalida cache
-- `GET /api/diet/plan/:userId`
-- `GET /api/recipes/daily` — header `x-user-id`
-- `GET /api/recipes?occasion=romantico&time=15min&cursor=&limit=20`
-- `GET /api/recipes/:id`
-- `GET /api/search?q=&occasion=` (NestJS)
-- `GET /admin/stats` (FastAPI, cache_adm)
+- `POST /api/diet/profile` — `{userId, answers}` → 201 + invalida `cache_used:diet:plan:{userId}`
+- `GET /api/diet/plan/:userId` — TTL 1h Redis
+- `GET /api/recipes/daily` — header `x-user-id`, TTL até 00:00 BRT
+- `GET /api/recipes?occasion=romantico&time=15min&cursor=&limit=20` — GIN tsvector + cursor pagination
+- `GET /api/recipes/:id` — `cache_used:recipe:{id}` TTL 1h
+- `GET /api/recipes/slug/:slug` — para ISR `generateStaticParams`
+- `GET /api/search?q=&occasion=` + `/api/search/suggest?q=` (NestJS) — trigram GIN, `cache_used:search:q:{hash}`
+- `GET /api/comments?recipe_id=` + `POST /api/comments` — `cache_used:comments:{recipeId}` TTL 5min
+- `GET /api/questions?recipe_id=` + `POST /api/questions`
+- `POST /api/auth/register` / `login` (JWT 15m + refresh 7d) / `refresh` / `logout` (blocklist) / `GET /api/auth/me` (Bearer)
+- `GET /admin/stats` + `/admin/recipes` (FastAPI, `cache_adm:*` TTL 10min, guard `ADMIN_JWT_SECRET`)
 
 ## Roadmap
 
 - **MVP 0-4m:** 150 receitas tagueadas, scoring regras, 12 ocasiões estáticas, paywall Stripe, RC/U/S >1.5, D7>25%
 - **Pós-MVP:** reaproveitamento inteligente, lista 1-clique (afiliado mercado), chat Nutri + copiloto IA, SEO programático 500 LPs
 
-Ver decisões completas dos agentes em histórico do chat. Próximo passo sugerido: `npx shadcn@latest init` + popular `packages/shared-types` + migrations TypeORM/Alembic.
+## Commits (cada feature = 1 commit + push)
+
+- `f06a6ed` scaffold monorepo sem Vue (4 agentes paralelos)
+- `2baa9d2` `feat(web): foundation Tailwind + shadcn + app shell`
+- `6749350` `feat(web): wizard dieta 15 perguntas (3 blocos) + plano`
+- `a118a34` `feat(web): receitas + ocasioes + daily + SEO`
+- `3fbabc2` `feat(api): DB modelagem TypeORM + migrations + seeds`
+- `4b6ee2b` `feat(search): full-text + comments + questions (NestJS)`
+- `8dfd932` `feat(auth): JWT 15m + refresh 7d + Redis blocklist + admin guard`
+
+> Workflows `.github/workflows/ci.yml` + `cd.yml` (GHCR) estão locais em `.github/` — requer `gh auth refresh -s workflow` para push (OAuth scope `workflow`).
+
+Ver decisões completas dos 4 agentes (Frontend, Backend, Produto, Infra) em histórico do chat.
 
 ## Licença
 
