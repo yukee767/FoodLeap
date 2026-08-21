@@ -4,7 +4,7 @@
 
 Filosofia: comer bem e prático, sem dietas restritas. *"É melhor comer um pouco de tudo, do que comer um monte de pouco."*
 
-**Repo:** https://github.com/yukee767/FoodLeap — Público | **Decisões:** 4 agentes em paralelo (Frontend, Backend, Produto, Infra)
+**Repo:** https://github.com/yukee767/FoodLeap — Público
 
 ## Arquitetura Final (sem Vue)
 
@@ -90,7 +90,7 @@ Prod: `docker compose -f infra/docker-compose.prod.yml up -d` (imagens GHCR) ou 
 
 ## Commits (cada feature = 1 commit + push)
 
-- `f06a6ed` scaffold monorepo sem Vue (4 agentes paralelos)
+- `f06a6ed` scaffold monorepo sem Vue
 - `2baa9d2` `feat(web): foundation Tailwind + shadcn + app shell`
 - `6749350` `feat(web): wizard dieta 15 perguntas (3 blocos) + plano`
 - `a118a34` `feat(web): receitas + ocasioes + daily + SEO`
@@ -98,9 +98,7 @@ Prod: `docker compose -f infra/docker-compose.prod.yml up -d` (imagens GHCR) ou 
 - `4b6ee2b` `feat(search): full-text + comments + questions (NestJS)`
 - `8dfd932` `feat(auth): JWT 15m + refresh 7d + Redis blocklist + admin guard`
 
-> Workflows `.github/workflows/ci.yml` + `cd.yml` (GHCR) estão locais em `.github/` — requer `gh auth refresh -s workflow` para push (OAuth scope `workflow`).
-
-Ver decisões completas dos 4 agentes (Frontend, Backend, Produto, Infra) em histórico do chat.
+> Workflows `.github/workflows/ci.yml` + `cd.yml` (GHCR) — CI/CD via GHCR, deploy Cloudflare Workers.
 
 ## Licença
 
