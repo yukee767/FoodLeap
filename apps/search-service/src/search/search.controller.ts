@@ -10,4 +10,14 @@ export class SearchController {
   async search(@Query('q') q: string, @Query('occasion') occasion?: string) {
     return this.searchService.search(q, occasion);
   }
+
+  @Get('suggest')
+  async suggest(@Query('q') q: string) {
+    return this.searchService.suggest(q);
+  }
+
+  @Get('health')
+  health() {
+    return { status: 'ok', service: 'search-service' };
+  }
 }
