@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import { cacheDel, cacheGet, cacheSet, publishInvalidate } from '../../utils/redis.js';
+import { MOCK_RECIPES, rankRecipes } from '../recipes/scoring.js';
 
 const router = Router();
 
 // 15 perguntas - 3 blocos (A: Objetivo/Corpo, B: Rotina/Praticidade, C: Paladar)
-// Decisão produto: wizard 1 pergunta/tela, progresso, cards com imagem
 export const DIET_QUESTIONS = [
   { id: 1, block: 'A', key: 'goal', question: 'Qual seu principal objetivo agora?', type: 'single_choice', options: ['emagrecer','ganhar_massa','manter_saudavel','energia','aprender_cozinhar'], required: true },
   { id: 2, block: 'A', key: 'activity_level', question: 'Como você descreve sua rotina de atividade física?', type: 'single_choice', options: ['sedentario','leve','moderado','intenso'], required: true },
@@ -37,16 +38,60 @@ const ProfileSchema = z.object({
 router.post('/profile', async (req, res) => {
   const parsed = ProfileSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
-  // TODO: salvar em PostgreSQL diet_profiles + diet_answers, publicar evento diet.profile.updated via Redis pub/sub
-  // Cache: DEL cache_used:diet:plan:{userId} e daily:{userId}:*
-  res.status(201).json({ message: 'perfil salvo', planId: 'uuid_placeholder', next: `/api/diet/plan/${parsed.data.userId}` });
+  const { userId, answers } = parsed.data;
+
+  // TODO: salvar em PostgreSQL diet_profiles (upsert) via TypeORM
+  // await ds.getRepository(DietProfile).upsert({ user_id: userId, answers, computed_at: new Date() }, ['user_id'])
+
+  // Gera plano semanal via scoring (MVP)
+  const ranked = rankRecipes(MOCK_RECIPES, answers as never);
+  const weekPlan = generateWeekPlan(ranked.map((r) => r.recipe), answers as Record<string, string>);
+
+  // Cache 1h
+  try {
+    await cacheSet(`cache_used:diet:plan:${userId}`, JSON.stringify({ ...weekPlan, week_start: new Date().toISOString().slice(0, 10) }), 60 * 60);
+    await cacheDel(`cache_used:daily:${userId}:*`);
+    await publishInvalidate('diet.profile.updated', userId);
+  } catch {}
+
+  res.status(201).json({ message: 'perfil salvo', planId: crypto.randomUUID(), next: `/api/diet/plan/${userId}`, previewMeals: weekPlan.meals.slice(0, 3) });
 });
 
-// GET /api/diet/plan/:userId - retorna dieta programada (usuário + sistema)
+// GET /api/diet/plan/:userId - retorna dieta programada (usuário + sistema) com cache 1h
 router.get('/plan/:userId', async (req, res) => {
-  // TODO: Cache Redis cache_used:diet:plan:{userId} TTL 1h, fallback PostgreSQL + algoritmo scoring
-  // Algoritmo MVP: filtros hard (Q3,Q13,Q8,Q5) + scoring ponderado (proteína 30 + tempo 25 + objetivo 20...)
-  res.json({ userId: req.params.userId, week_start: new Date().toISOString().slice(0,10), meals: [] });
+  const { userId } = req.params;
+  const cacheKey = `cache_used:diet:plan:${userId}`;
+
+  try {
+    const cached = await cacheGet(cacheKey);
+    if (cached) return res.json({ userId, cached: true, ...JSON.parse(cached) });
+  } catch {}
+
+  // TODO: fallback DB + scoring se não em cache
+  // Por enquanto, se não tem cache, retorna vazio instrutivo
+  res.json({ userId, week_start: new Date().toISOString().slice(0, 10), meals: [], note: 'Faça POST /api/diet/profile para gerar plano. Cache miss.' });
 });
+
+function generateWeekPlan(rankedRecipes: typeof MOCK_RECIPES, answers: Record<string, string>) {
+  const freq = answers.cook_frequency ?? 'todo_dia';
+  const days = 7;
+  const meals: { day: number; meal_type: string; recipe_id: string; title: string }[] = [];
+
+  // Se 1x marmita, repete 2 bases por 3 dias; se todo_dia, 1 receita/dia
+  const perDay = freq === '1x' ? 0.5 : freq === '2_3x' ? 0.7 : 1;
+  const totalMeals = Math.max(3, Math.round(days * perDay * 2)); // 2 refeições/dia avg
+
+  for (let i = 0; i < totalMeals; i++) {
+    const recipe = rankedRecipes[i % rankedRecipes.length];
+    meals.push({
+      day: (i % 7) + 1,
+      meal_type: i % 3 === 0 ? 'almoco' : i % 3 === 1 ? 'jantar' : 'cafe',
+      recipe_id: recipe.id,
+      title: recipe.title,
+    });
+  }
+
+  return { meals, total_kcal: null, generated_by: 'system' as const };
+}
 
 export default router;
