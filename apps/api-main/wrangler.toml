@@ -1,12 +1,55 @@
+# =============================================================================
+# FoodLeap API Main – Cloudflare Workers
+# Express → Hono adaptado para Workers (src/worker.ts)
+# =============================================================================
 name = "foodleap-api"
 main = "src/worker.ts"
 compatibility_date = "2025-08-21"
 compatibility_flags = ["nodejs_compat"]
 
+workers_dev = true
+preview_urls = true
+
 [observability.logs]
 enabled = true
 
+[observability.traces]
+enabled = true
+
+# ---------------------------------------------------------------------------
+# Variáveis públicas (não secretas)
+# ---------------------------------------------------------------------------
 [vars]
 NODE_ENV = "production"
-# Mock mode - sem DB real no Worker (Hyperdrive configurável depois)
-MOCK_DB = "true"
+MOCK_DB = "false"
+API_ENV = "cloudflare"
+
+# ---------------------------------------------------------------------------
+# KV para cache + banco de receitas (substitui Redis e R2)
+# Criado via: wrangler kv namespace create CACHE_KV
+# ---------------------------------------------------------------------------
+[[kv_namespaces]]
+binding = "CACHE_KV"
+id = "34fadba6525b47eaa26b55775792f187"
+preview_id = "16c6a47d411f47fda4799d428ae41a67"
+
+# ---------------------------------------------------------------------------
+# R2 (desativado – usando KV puro, free tier suficiente para 375KB)
+# Para reativar: wrangler r2 bucket create foodleap-recipes
+# ---------------------------------------------------------------------------
+# [[r2_buckets]]
+# binding = "RECIPES_BUCKET"
+# bucket_name = "foodleap-recipes"
+
+# ---------------------------------------------------------------------------
+# Postgres via Hyperdrive (opcional – descomente quando tiver Neon/Supabase)
+# ---------------------------------------------------------------------------
+# [[hyperdrive]]
+# binding = "HYPERDRIVE"
+# id = "hyperdrive-id-aqui"
+
+# ---------------------------------------------------------------------------
+# Secrets (configure via: wrangler secret put JWT_SECRET)
+# ---------------------------------------------------------------------------
+# JWT_SECRET
+# ADMIN_JWT_SECRET

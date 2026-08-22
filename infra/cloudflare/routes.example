@@ -1,0 +1,3 @@
+# routes = [{ pattern = "api.foodleap.com.br/*", zone_name = "foodleap.com.br" }]
+# routes = [{ pattern = "search.foodleap.com.br/*", zone_name = "foodleap.com.br" }]
+# routes = [{ pattern = "foodleap.com.br/*", zone_name = "foodleap.com.br" }]
