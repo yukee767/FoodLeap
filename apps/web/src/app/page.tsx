@@ -41,7 +41,7 @@ export default function Home() {
                   </Button>
                 </Link>
                 <Link href="#como-funciona">
-                  <Button variant="outline" size="lg" className="h-12 px-8 rounded-full w-full sm:w-auto">
+                  <Button variant="outline" size="lg" className="h-12 px-8 rounded-full w-full sm:w-auto border-orange-500 text-orange-600 hover:bg-orange-50 hover:text-orange-700">
                     Ver como funciona
                   </Button>
                 </Link>
@@ -91,9 +91,13 @@ export default function Home() {
 
               {/* phone frame */}
               <div className="relative mx-auto h-[640px] w-[320px] rounded-[3rem] border-[10px] border-zinc-900 bg-zinc-900 shadow-2xl overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-24 rounded-b-2xl bg-zinc-900 z-10" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 h-7 w-24 rounded-b-2xl bg-zinc-900 z-20" />
                 <div className="h-full w-full bg-white overflow-hidden flex flex-col">
-                  <div className="h-12 bg-gradient-to-r from-orange-500 to-amber-500 flex items-center justify-center text-white font-bold text-sm">FoodLeap</div>
+                  <div className="relative h-[56px] shrink-0 bg-gradient-to-r from-orange-500 to-amber-500 flex items-end justify-center pb-3 pt-6 text-white font-bold text-[14px] tracking-wide z-0">
+                    <span className="relative drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)]">FoodLeap</span>
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/25 via-white/5 to-transparent backdrop-blur-[0.5px]" />
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/30" />
+                  </div>
                   <div className="p-4 space-y-3 overflow-hidden">
                     <div className="rounded-2xl bg-orange-50 p-3 border border-orange-100">
                       <p className="text-xs font-semibold text-orange-700 flex items-center gap-1"><Sparkles className="h-3 w-3" /> Receita do Dia</p>
@@ -170,22 +174,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* como funciona */}
-      <section id="como-funciona" className="container mt-20">
-        <h2 className="text-center text-2xl font-bold">Como funciona</h2>
-        <p className="text-center text-muted-foreground">Três passos, zero neura.</p>
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {[
-            { n: '01', t: 'Conta o que você gosta', d: 'Proteínas, restrições, tempo e rotina.' },
-            { n: '02', t: 'Receba seu plano', d: 'Receitas do dia + semana organizada.' },
-            { n: '03', t: 'Cozinhe e evolua', d: 'Avalie e o app aprende com você.' },
-          ].map((s) => (
-            <div key={s.n} className="rounded-2xl border bg-white p-6 text-center">
-              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-zinc-900 text-white font-bold text-sm">{s.n}</div>
-              <h3 className="mt-3 font-semibold">{s.t}</h3>
-              <p className="text-sm text-muted-foreground">{s.d}</p>
-            </div>
-          ))}
+      {/* como funciona - dedicado */}
+      <section id="como-funciona" className="relative bg-[#FFFBF5] dark:bg-zinc-950 border-y border-orange-100/50 py-20 md:py-28 overflow-hidden">
+        <div className="pointer-events-none absolute -top-20 -left-20 h-[400px] w-[400px] rounded-full bg-gradient-to-br from-orange-400/20 via-amber-400/15 to-red-400/15 blur-[70px]" />
+        <div className="pointer-events-none absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-emerald-400/10 to-teal-200/10 blur-[80px]" />
+        <div className="container relative">
+          <div className="mx-auto max-w-[60ch] text-center">
+            <Badge className="gap-1.5 bg-orange-100 text-orange-700 border-orange-200"><Sparkles className="h-3 w-3" /> Como funciona • De zero ao prato em 2 minutos</Badge>
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight md:text-4xl">
+              Seu gosto <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-red-500 bg-clip-text text-transparent">vira rotina</span>. Sem neura.
+            </h2>
+            <p className="mt-3 text-muted-foreground leading-relaxed">
+              Conte o que você ama, receba um plano que cabe no seu tempo e cozinhe com confiança. O app aprende com você a cada prato.
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">12.000+ planos criados • 4,8/5 (2.431 avaliações) • 2 min para começar</p>
+          </div>
+
+          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              { n: '01', icon: Heart, title: 'Conte o que você gosta', desc: '15 perguntas visuais, não formulário chato. Proteínas, restrições, tempo e rotina.', grad: 'from-orange-500 to-amber-500', pill: 'Quiz de 2 minutos' },
+              { n: '02', icon: Leaf, title: 'Receba seu plano vivo', desc: 'Receita do dia + semana organizada + lista de compras por corredor.', grad: 'from-emerald-500 to-teal-500', pill: 'Semana pronta' },
+              { n: '03', icon: Utensils, title: 'Cozinhe sem neura', desc: 'Passo a passo com foto, timer integrado e substituições em 1 toque.', grad: 'from-rose-500 to-pink-500', pill: 'Modo mãos livres' },
+              { n: '04', icon: Star, title: 'Avalie e evolua', desc: 'Ame / ok / não curti e o app aprende seu paladar. Favoritos viram repetição.', grad: 'from-amber-500 to-orange-500', pill: 'Aprendizado' },
+            ].map((s) => {
+              const Icon = s.icon;
+              return (
+                <div key={s.n} className="rounded-[1.75rem] border bg-white p-7 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all text-left flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className={`flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br ${s.grad} text-white shadow`}><Icon className="h-5 w-5" /></span>
+                    <span className="text-[42px] font-black leading-none tracking-tighter bg-gradient-to-br from-orange-500 to-amber-500 bg-clip-text text-transparent">{s.n}</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold">{s.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">{s.desc}</p>
+                    <span className="mt-3 inline-flex rounded-full bg-zinc-50 border px-2.5 py-1 text-xs">{s.pill}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-10 flex justify-center">
+            <Link href="/dieta">
+              <Button size="lg" className="rounded-full bg-zinc-900 px-8 h-12">Criar meu plano agora <ArrowRight className="ml-2 h-4 w-4" /></Button>
+            </Link>
+          </div>
         </div>
       </section>
 

@@ -8,15 +8,16 @@ export function QuestionStep({
   question,
   form,
 }: {
-  question: { id: number; key: string; question: string; type: string; options: readonly string[]; required: boolean };
+  question: { id: number; key: string; question: string; description?: string; type: string; options: readonly string[]; required: boolean };
   form: UseFormReturn<Record<string, unknown>>;
 }) {
   const isMulti = question.type === 'multi_choice';
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">{question.question}</h2>
-      <p className="text-sm text-muted-foreground">
+      <h2 className="text-xl font-semibold leading-tight">{question.question}</h2>
+      {question.description && <p className="text-sm leading-relaxed text-muted-foreground">{question.description}</p>}
+      <p className="text-xs text-muted-foreground">
         {isMulti ? (question.key === 'favorite_protein' ? 'Selecione até 3' : 'Selecione uma ou mais') : 'Escolha uma opção'}
         {!question.required && ' • Opcional'}
       </p>

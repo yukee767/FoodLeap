@@ -124,24 +124,16 @@ export function PWAInstallPrompt() {
       aria-label="Instalar aplicativo FoodLeap"
       className="fixed inset-x-0 bottom-0 z-50 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] md:bottom-4 md:left-1/2 md:max-w-lg md:-translate-x-1/2"
     >
-      <div className="relative flex items-center gap-4 rounded-2xl border bg-white p-4 shadow-2xl dark:bg-zinc-900 dark:border-zinc-800 animate-in slide-in-from-bottom-4 duration-300">
-        <button
-          onClick={dismiss}
-          aria-label="Fechar"
-          className="absolute right-2 top-2 rounded-full p-1.5 text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800"
-        >
-          <X className="h-4 w-4" />
-        </button>
-
+      <div className="flex items-start gap-3 rounded-2xl border bg-white p-4 pl-4 pr-3 shadow-2xl dark:bg-zinc-900 dark:border-zinc-800 animate-in slide-in-from-bottom-4 duration-300 overflow-visible">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/25">
           <Smartphone className="h-6 w-6" />
         </div>
 
-        <div className="flex-1 pr-6">
+        <div className="flex-1 min-w-0 pt-0.5">
           <p className="text-sm font-semibold leading-none">Instale o app FoodLeap</p>
           {isIOSDevice ? (
             <p className="mt-1 flex items-center gap-1 text-xs leading-tight text-muted-foreground">
-              Toque em <Share className="inline h-3 w-3" /> Compartilhar e depois &quot;Adicionar à Tela de Início&quot;
+              Toque em <Share className="inline h-3 w-3" aria-hidden="true" /> Compartilhar e depois &quot;Adicionar à Tela de Início&quot;
             </p>
           ) : (
             <p className="mt-1 text-xs leading-tight text-muted-foreground">
@@ -150,25 +142,35 @@ export function PWAInstallPrompt() {
           )}
         </div>
 
-        {!isIOSDevice && deferredPrompt ? (
-          <Button
-            onClick={handleInstall}
-            size="sm"
-            className="shrink-0 rounded-full bg-zinc-900 px-5 font-semibold text-white hover:bg-black dark:bg-white dark:text-black dark:hover:bg-zinc-100"
-          >
-            <Download className="mr-1.5 h-4 w-4" />
-            Instalar
-          </Button>
-        ) : isIOSDevice ? (
-          <Button
+        <div className="flex shrink-0 items-center gap-2 self-start">
+          {!isIOSDevice && deferredPrompt ? (
+            <Button
+              onClick={handleInstall}
+              size="sm"
+              className="shrink-0 rounded-full bg-zinc-900 px-5 font-semibold text-white hover:bg-black dark:bg-white dark:text-black dark:hover:bg-zinc-100"
+            >
+              <Download className="mr-1.5 h-4 w-4" aria-hidden="true" />
+              Instalar
+            </Button>
+          ) : isIOSDevice ? (
+            <Button
+              onClick={dismiss}
+              variant="secondary"
+              size="sm"
+              className="shrink-0 rounded-full"
+            >
+              Entendi
+            </Button>
+          ) : null}
+          <button
+            type="button"
             onClick={dismiss}
-            variant="secondary"
-            size="sm"
-            className="shrink-0 rounded-full"
+            aria-label="Fechar banner de instalação"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 focus-visible:ring-offset-2 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:focus-visible:ring-white"
           >
-            Entendi
-          </Button>
-        ) : null}
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
       </div>
     </div>
   );
