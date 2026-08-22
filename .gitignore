@@ -6,6 +6,7 @@ out
 .wrangler
 .venv
 next-env.d.ts
+tsconfig.tsbuildinfo
 __pycache__
 *.pyc
 .env
