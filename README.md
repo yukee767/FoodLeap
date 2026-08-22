@@ -1,9 +1,11 @@
 # FoodLeap — Gastronomia e FoodTech
 
-[![Repo](https://img.shields.io/badge/GitHub-yukee767%2FFoodLeap-0d3b66?style=for-the-badge&logo=github)](https://github.com/yukee767/FoodLeap) [![Stack](https://img.shields.io/badge/Stack-Next.js%20%7C%20Express%20%7C%20NestJS%20%7C%20FastAPI-blue)](#stack) [![Infra Local](https://img.shields.io/badge/Infra-Docker%20Compose-2496ED?logo=docker)](#como-rodar--docker-compose) [![Deploy](https://img.shields.io/badge/Deploy-GHCR%20%2B%20Cloudflare-F38020)](#como-rodar--produção)
+[![Site Ao Vivo](https://img.shields.io/badge/Site%20Ao%20Vivo-foodleap--web.victorlima124tt.workers.dev-0ea5e9?style=for-the-badge&logo=cloudflare)](https://foodleap-web.victorlima124tt.workers.dev) [![Repo](https://img.shields.io/badge/GitHub-yukee767%2FFoodLeap-0d3b66?style=for-the-badge&logo=github)](https://github.com/yukee767/FoodLeap) [![Stack](https://img.shields.io/badge/Stack-Next.js%20%7C%20Express%20%7C%20NestJS%20%7C%20FastAPI-blue)](#stack) [![Infra Local](https://img.shields.io/badge/Infra-Docker%20Compose-2496ED?logo=docker)](#como-rodar--docker-compose) [![Deploy](https://img.shields.io/badge/Deploy-GHCR%20%2B%20Cloudflare-F38020)](#como-rodar--produção)
 
 > Receitas diárias personalizadas + dieta integrada (15 perguntas) + acompanhamento nutricional humano.
 > Filosofia: comer bem e prático, sem dietas restritas. *"É melhor comer um pouco de tudo, do que comer um monte de pouco."*
+
+**🌐 Site ao vivo (Cloudflare Workers):** https://foodleap-web.victorlima124tt.workers.dev
 
 **Repositório público** — https://github.com/yukee767/FoodLeap
 
@@ -163,6 +165,8 @@ docker compose -f infra/docker-compose.yml down
 
 ## Como Rodar — Produção
 
+> **🌐 Site ao vivo:** https://foodleap-web.victorlima124tt.workers.dev — deploy automático do `apps/web` em Cloudflare Workers via OpenNext (`apps/web/wrangler.toml` / `opennextjs-cloudflare`).
+
 As imagens são publicadas no GHCR pelo workflow `cd.yml` e orquestradas pelo `infra/docker-compose.prod.yml`.
 
 ```bash
@@ -184,6 +188,7 @@ curl http://localhost:3000   # único serviço exposto ao host (:3000)
 ```
 
 > O frontend também pode ser deployado standalone em **Cloudflare Workers** via OpenNext (`apps/web/wrangler.toml`, scripts `build:worker`/`preview`/`deploy`).
+> **URL de produção:** https://foodleap-web.victorlima124tt.workers.dev
 
 CI/CD: `.github/workflows/ci.yml` (lint/build/test) e `cd.yml` (build + push GHCR).
 

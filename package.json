@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "description": "FoodLeap - Receitas personalizadas e dieta integrada",
+  "homepage": "https://foodleap-web.victorlima124tt.workers.dev",
   "workspaces": [
     "apps/*",
     "packages/*"
